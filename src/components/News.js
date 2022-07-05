@@ -31,7 +31,7 @@ const News = (props)=>{
 
     useEffect(() => {
         document.title = `${capitalizeFirstLetter(props.category)} - NewsMania`;
-        updateNews(); 
+        updateNews();
         // eslint-disable-next-line
     }, [])
 
@@ -75,7 +75,7 @@ const News = (props)=>{
 News.defaultProps = {
     country: 'in',
     pageSize: 8,
-    category: 'general',
+    category: '',
 }
 
 News.propTypes = {
