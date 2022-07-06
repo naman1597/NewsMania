@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const News = (props)=>{
-    const [articles, setArticles] = useState([])
+    const [results, setResults] = useState([])
     const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(1)
     const [totalResults, setTotalResults] = useState(0)
@@ -17,13 +17,13 @@ const News = (props)=>{
 
     const updateNews = async ()=> {
         props.setProgress(10);
-        const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`; 
+        const url = `https://newsdata.io/api/1/news?country=${props.country}&apikey=${props.apiKey}&category=${props.category}&page=${page}`; 
         setLoading(true);
         let data = await fetch(url);
         props.setProgress(30);
         let parsedData = await data.json()
         props.setProgress(70);
-        setArticles(parsedData.articles)
+        setResults(parsedData.results)
         setTotalResults(parsedData.totalResults)
         setLoading(false)
         props.setProgress(100);
@@ -39,11 +39,11 @@ const News = (props)=>{
 
 
     const fetchMoreData = async () => {   
-        const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page+1}&pageSize=${props.pageSize}`;
+        const url = `https://newsdata.io/api/1/news?country=${props.country}&apikey=${props.apiKey}&category=${props.category}&page=${page+1}`;
         setPage(page+1) 
         let data = await fetch(url);
         let parsedData = await data.json()
-        setArticles(articles.concat(parsedData.articles))
+        setResults(results.concat(parsedData.results))
         setTotalResults(parsedData.totalResults)
       };
  
@@ -52,17 +52,17 @@ const News = (props)=>{
                 <h1 className="text-center" style={{ margin: '35px 0px', marginTop: '90px' }}>NewsMania - Top {capitalizeFirstLetter(props.category)} Headlines</h1>
                 {loading && <Spinner />}
                 <InfiniteScroll
-                    dataLength={articles.length}
+                    dataLength={results.length}
                     next={fetchMoreData}
-                    hasMore={articles.length !== totalResults}
+                    hasMore={results.length !== totalResults}
                     loader={<Spinner/>}
                 > 
                     <div className="container">
                          
                     <div className="row">
-                        {articles.map((element) => {
-                            return <div className="col-md-4" key={element.url}>
-                                <NewsItem title={element.title ? element.title : ""} description={element.description ? element.description : ""} imageUrl={element.urlToImage} newsUrl={element.url} author={element.author} date={element.publishedAt} source={element.source.name} />
+                        {results.map((element) => {
+                            return <div className="col-md-4" key={element.link}>
+                                <NewsItem title={element.title ? element.title : ""} description={element.description ? element.description : ""} imageUrl={element.image_url} newsUrl={element.link} author={element.creator} date={element.pubDate} source={element.source_id} />
                             </div>
                         })}
                     </div>
@@ -76,13 +76,13 @@ const News = (props)=>{
 
 News.defaultProps = {
     country: 'in',
-    pageSize: 8,
-    category: 'general',
+    //pageSize: 8,
+    category: 'top',
 }
 
 News.propTypes = {
     country: PropTypes.string,
-    pageSize: PropTypes.number,
+    //pageSize: PropTypes.number,
     category: PropTypes.string,
 }
 
